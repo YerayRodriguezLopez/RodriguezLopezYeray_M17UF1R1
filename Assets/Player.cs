@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
@@ -12,6 +13,9 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public Vector2 _dir;
     public int health = 3;
     [SerializeField] private GameObject damageObj;
+    private bool goingRight = true;
+    private bool hitted = false;
+    private Stopwatch stopwatch;
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -25,10 +29,12 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         if (_dir.x > 0)
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            goingRight = true;
         }
         else if (_dir.x < 0)
         {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            goingRight = false;
         }
     }
 
@@ -54,19 +60,36 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // Update is called once per frame
     void Update()
     {
-        _mb.Move(_dir);
+        // Move the player based on input and if not hitted
+        if (hitted)
+        {
+            if (stopwatch == null)
+            {
+                stopwatch = Stopwatch.StartNew();
+            }
+            else if (stopwatch.ElapsedMilliseconds >= 500)
+            {
+                hitted = false;
+                stopwatch.Stop();
+                stopwatch = null;
+            }
+        }
+        else
+        {
+            _mb.Move(_dir);
+        }
     }
     // When the player collides with an obstacle get knocked back and a little bit up
     public void Hurt()
     {
-        Vector2 knockback = new Vector2(-_dir.x * 5f, 5f);
-        _rb.AddForce(knockback, ForceMode2D.Impulse);
-        health -= 1;
-        _ab.HurtAnimation();
+        health--;
+        hitted = true;
+        Vector2 knockbackDir = goingRight ? Vector2.left : Vector2.right;
+        _rb.linearVelocity = knockbackDir * 5f + Vector2.up * 5f;
         if (health <= 0)
         {
-            // Handle player death (e.g., reload scene, show game over screen, etc.)
-            Debug.Log("Player has died.");
+            // Restart the level
+            //UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
     }
 }

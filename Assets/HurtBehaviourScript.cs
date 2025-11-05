@@ -11,11 +11,11 @@ public class HurtBehaviourScript : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.gameObject.TryGetComponent<Player>(out Player play))
         {
-            player.Hurt();
+            play.Hurt();
         }
     }
 }

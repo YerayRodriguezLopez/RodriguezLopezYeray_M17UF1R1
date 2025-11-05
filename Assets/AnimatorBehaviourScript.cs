@@ -18,6 +18,6 @@ public class AnimatorBehaviourScript : MonoBehaviour
     }
     public void HurtAnimation()
     {
-        animator.SetTrigger("Hurt");
+        animator.SetBool("Hurt", true);
     }
 }

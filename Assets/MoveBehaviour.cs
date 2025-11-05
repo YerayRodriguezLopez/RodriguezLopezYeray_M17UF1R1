@@ -21,6 +21,16 @@ public class MoveBehaviour : MonoBehaviour
             else
                 rb.AddForce(new Vector2(0, -5f), ForceMode2D.Impulse);
             rb.gravityScale *= -1f;
+            //slowly flip the player scaling it over half a second
+            Vector3 scale = transform.localScale;
+            float flipDuration = 0.5f;
+            float elapsedTime = 0f;
+            while (elapsedTime < flipDuration)
+            {
+                float t = elapsedTime / flipDuration;
+                transform.localScale = new Vector3(scale.x, Mathf.Lerp(scale.y, -scale.y, t), scale.z);
+                elapsedTime += Time.deltaTime;
+            }
         }
     }
 }
