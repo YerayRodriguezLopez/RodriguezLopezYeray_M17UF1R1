@@ -1,16 +1,23 @@
 using UnityEngine;
-
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class AnimatorBehaviourScript : MonoBehaviour
 {
+    Animator animator;
+    Rigidbody2D rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        
+        animator.SetFloat("Run", Mathf.Abs(rb.linearVelocityX));
+    }
+    public void HurtAnimation()
+    {
+        animator.SetTrigger("Hurt");
     }
 }

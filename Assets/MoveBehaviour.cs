@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 
@@ -12,10 +13,14 @@ public class MoveBehaviour : MonoBehaviour
     }
     public void Jump()
     {
-        if (rb.gravityScale > 0)
-            rb.AddForce(new Vector2(0, 5f), ForceMode2D.Impulse);
-        else
-            rb.AddForce(new Vector2(0, -5f), ForceMode2D.Impulse);
-        rb.gravityScale *= -1f;
+        //check if the player is on the ground
+        if (Mathf.Abs(rb.linearVelocityY) < 0.01f)
+        {
+            if (rb.gravityScale > 0)
+                rb.AddForce(new Vector2(0, 5f), ForceMode2D.Impulse);
+            else
+                rb.AddForce(new Vector2(0, -5f), ForceMode2D.Impulse);
+            rb.gravityScale *= -1f;
+        }
     }
 }
