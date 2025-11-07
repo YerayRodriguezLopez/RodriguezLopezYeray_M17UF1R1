@@ -14,7 +14,7 @@ public class AnimatorBehaviourScript : MonoBehaviour
 
     public void Update()
     {
-        animator.SetFloat("Run", Mathf.Abs(rb.linearVelocityX));
+        animator.Set
     }
     public void HurtAnimation()
     {

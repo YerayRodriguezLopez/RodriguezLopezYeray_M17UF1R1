@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     private bool hitted = false;
     private Stopwatch stopwatch;
     public int cheeseCount = 0;
+    public Animator animator;
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -43,6 +44,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         _mb = GetComponent<MoveBehaviour>();
         _inputActions = new InputSystem_Actions();
         _inputActions.Player.SetCallbacks(this);
+        animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
