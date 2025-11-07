@@ -11,9 +11,8 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     private Rigidbody2D _rb;
     private InputSystem_Actions _inputActions;
     public Vector2 _dir;
-    public int health = 3;
+    private int deaths;
     [SerializeField] private GameObject damageObj;
-    private bool goingRight = true;
     private bool hitted = false;
     private Stopwatch stopwatch;
     public int cheeseCount = 0;
@@ -30,12 +29,10 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         if (_dir.x > 0)
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            goingRight = true;
         }
         else if (_dir.x < 0)
         {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            goingRight = false;
         }
     }
 
@@ -83,14 +80,10 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // When the player collides with an obstacle get knocked back and a little bit up
     public void Hurt()
     {
-        health--;
-        hitted = true;
-        Vector2 knockbackDir = goingRight ? Vector2.left : Vector2.right;
-        _rb.linearVelocity = knockbackDir * 5f + Vector2.up * 5f;
-        if (health <= 0)
+        if (_rb.gravityScale < 0)
         {
-            // Restart the level
-            //UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            _rb.gravityScale = 1f;
         }
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }
