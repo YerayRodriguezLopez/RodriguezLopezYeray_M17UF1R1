@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     private bool goingRight = true;
     private bool hitted = false;
     private Stopwatch stopwatch;
+    public int cheeseCount = 0;
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
