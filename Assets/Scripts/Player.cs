@@ -17,6 +17,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     private Stopwatch stopwatch;
     public int cheeseCount = 0;
     public Animator animator;
+    public GameObject door;
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -60,24 +61,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // Update is called once per frame
     void Update()
     {
-        // Move the player based on input and if not hitted
-        if (hitted)
-        {
-            if (stopwatch == null)
-            {
-                stopwatch = Stopwatch.StartNew();
-            }
-            else if (stopwatch.ElapsedMilliseconds >= 500)
-            {
-                hitted = false;
-                stopwatch.Stop();
-                stopwatch = null;
-            }
-        }
-        else
-        {
-            _mb.Move(_dir);
-        }
+        _mb.Move(_dir);
     }
     // When the player collides with an obstacle get knocked back and a little bit up
     public void Hurt()
@@ -87,5 +71,12 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             _rb.gravityScale = 1f;
         }
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    public void OnUseDoor(InputAction.CallbackContext context)
+    {
+        if (context.performed && inDoor)
+        {
+        }
     }
 }
