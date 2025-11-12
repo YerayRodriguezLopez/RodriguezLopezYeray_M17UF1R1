@@ -14,7 +14,6 @@ public class AnimatorBehaviourScript : MonoBehaviour
 
     public void Update()
     {
-        animator.Set
     }
     public void HurtAnimation()
     {

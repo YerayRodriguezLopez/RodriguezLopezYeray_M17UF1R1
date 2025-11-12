@@ -15,7 +15,10 @@ public class HurtBehaviourScript : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent<Player>(out Player play))
         {
-            play.Hurt();
+            //only if collided from top
+            //if (other.transform.position.y > transform.position.y + 0.5f)
+                play.Hurt();
+            
         }
     }
 }
