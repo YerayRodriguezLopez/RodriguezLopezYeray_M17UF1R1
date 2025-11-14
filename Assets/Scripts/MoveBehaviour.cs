@@ -16,7 +16,7 @@ public class MoveBehaviour : MonoBehaviour
     public void Jump()
     {
         //check if the player is on the ground
-        if (Mathf.Abs(rb.linearVelocityY) < 0.01f || player.cheeseCount >= 5)
+        if (Mathf.Abs(rb.linearVelocityY) < 0.01f || player.CheeseCount >= 5)
         {
             if (rb.gravityScale > 0)
                 rb.AddForce(new Vector2(0, 5f), ForceMode2D.Impulse);

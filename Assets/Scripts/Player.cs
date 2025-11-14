@@ -13,11 +13,10 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public Vector2 _dir;
     private int deaths;
     [SerializeField] private GameObject damageObj;
-    private bool hitted = false;
     private Stopwatch stopwatch;
-    public int cheeseCount = 0;
-    public Animator animator;
-    public GameObject door;
+    public int CheeseCount = 0;
+    public Animator Animator;
+    public Vector2 RespawnPoint;
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -45,17 +44,22 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         _mb = GetComponent<MoveBehaviour>();
         _inputActions = new InputSystem_Actions();
         _inputActions.Player.SetCallbacks(this);
-        animator = GetComponent<Animator>();
+        Animator = GetComponent<Animator>();
+        RespawnPoint = transform.position;
     }
 
     private void OnEnable()
     {
         _inputActions.Player.Enable();
+        HurtBehaviourScript.OnPlayerHurt += Hurt;
+        DoorBehaviourScript.OnPlayerDoor += EnterDoor;
     }
 
     private void OnDisable()
     {
         _inputActions.Player.Disable();
+        HurtBehaviourScript.OnPlayerHurt -= Hurt;
+        DoorBehaviourScript.OnPlayerDoor -= EnterDoor;
     }
 
     // Update is called once per frame
@@ -68,15 +72,26 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         if (_rb.gravityScale < 0)
         {
-            _rb.gravityScale = 1f;
+            _rb.linearVelocityY = 0;
+            _rb.gravityScale
         }
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        _rb.transform.position = RespawnPoint;
     }
-
-    public void OnUseDoor(InputAction.CallbackContext context)
+    public void EnterDoor()
     {
-        if (context.performed && inDoor)
+        // Move and set the respawn point to the next door if the current one is odd, if even move to the previous door using the game manager and update the DoorTouched
+        GameManager.instance.DoorTouched++;
+        if (GameManager.instance.DoorTouched % 2 == 0)
         {
+            RespawnPoint = GameManager.instance.doorsList[GameManager.instance.DoorTouched - 2].transform.position;
+            RespawnPoint.x += 1f;
+            transform.position = RespawnPoint;
+        }
+        else
+        {
+            RespawnPoint = GameManager.instance.doorsList[GameManager.instance.DoorTouched].transform.position;
+            RespawnPoint.x += 1f;
+            transform.position = RespawnPoint;
         }
     }
 }
