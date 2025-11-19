@@ -12,11 +12,23 @@ public class AnimatorBehaviourScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Update()
+    public void FixedUpdate()
     {
+        if (Mathf.Abs(rb.linearVelocityX) > 0.1f)
+        {
+            animator.SetBool("Moving", true);
+        }
+        else
+        {
+            animator.SetBool("Moving", false);
+        }
     }
-    public void HurtAnimation()
+    public void GotHurt()
     {
         animator.SetBool("Hurt", true);
+    }
+    public void EndHurt()
+    {
+        animator.SetBool("Hurt", false);
     }
 }

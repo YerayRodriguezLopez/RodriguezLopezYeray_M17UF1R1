@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public List<DoorBehaviourScript> doorsList;
-    public int DoorTouched = 1;
+    public int CurrentLevel = 0;
     void Awake()
     {
         if (instance == null)
