@@ -11,9 +11,8 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     private Rigidbody2D _rb;
     private InputSystem_Actions _inputActions;
     public Vector2 _dir;
-    private int deaths;
+    private int health = 3;
     [SerializeField] private GameObject damageObj;
-    private Stopwatch stopwatch;
     public int CheeseCount = 0;
     public Animator Animator;
     public Vector2 RespawnPoint;
@@ -42,6 +41,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         _rb = GetComponent<Rigidbody2D>();
         _mb = GetComponent<MoveBehaviour>();
+        _ab = GetComponent<AnimatorBehaviourScript>();
         _inputActions = new InputSystem_Actions();
         _inputActions.Player.SetCallbacks(this);
         Animator = GetComponent<Animator>();
@@ -70,28 +70,29 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // When the player collides with an obstacle get knocked back and a little bit up
     public void Hurt()
     {
+        health -= 1;
+        _ab.GotHurt();
+        _rb.linearVelocity = new Vector2(0, 0);
+    }
+    public void ResetPlayerAfterDeath()
+    {        
+        _inputActions.Player.Disable();
         if (_rb.gravityScale < 0)
         {
-            _rb.linearVelocityY = 0;
-            _rb.gravityScale
+            _rb.gravityScale *= -1f;
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
         }
         _rb.transform.position = RespawnPoint;
+        _ab.EndHurt();
+        _inputActions.Player.Enable();
     }
-    public void EnterDoor()
+    public void EnterDoor(int directionToNextDoor, int exitDirection)
     {
-        // Move and set the respawn point to the next door if the current one is odd, if even move to the previous door using the game manager and update the DoorTouched
-        GameManager.instance.DoorTouched++;
-        if (GameManager.instance.DoorTouched % 2 == 0)
-        {
-            RespawnPoint = GameManager.instance.doorsList[GameManager.instance.DoorTouched - 2].transform.position;
-            RespawnPoint.x += 1f;
-            transform.position = RespawnPoint;
-        }
-        else
-        {
-            RespawnPoint = GameManager.instance.doorsList[GameManager.instance.DoorTouched].transform.position;
-            RespawnPoint.x += 1f;
-            transform.position = RespawnPoint;
-        }
+        // Add the direction to the current level
+        GameManager.instance.CurrentLevel += directionToNextDoor;
+        // Set the respawnpoint to a little bit the next door's position
+        RespawnPoint = GameManager.instance.doorsList[GameManager.instance.CurrentLevel].transform.position + new Vector3(2 * exitDirection, 0, 0);
+        // Move the player to the respawn point
+        _rb.transform.position = RespawnPoint;
     }
 }
