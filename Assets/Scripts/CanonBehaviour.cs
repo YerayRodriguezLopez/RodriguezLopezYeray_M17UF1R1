@@ -1,53 +1,102 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class CanonBehaviour : MonoBehaviour
 {
-    // Create a stack of GameObjects to hold the projectiles
-    private Stack<GameObject> bulletStack;
-    // Create a public GameObject variable to hold the projectile prefab
-    public GameObject Bullet;
-    // Create a raycast hit variable
-    private RaycastHit2D hit;
-    private float shootDelay = 0.2f;
-    private float speed = 5f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    [Header("Detection Settings")]
+    public float detectionRange = 10f;
+    public LayerMask playerLayer;
+    public Transform raycastOrigin;
+
+    [Header("Shooting Settings")]
+    public GameObject bulletPrefab;
+    public Transform firePoint;
+    public float fireRate = 1f;
+    public float bulletSpeed = 20f;
+
+    [Header("Debug")]
+    public bool showDebugRay = true;
+
+    private float nextFireTime = 0f;
+    private Transform player;
+
+    void Enable()
     {
-        bulletStack = new Stack<GameObject>();
+        if (raycastOrigin == null)
+            raycastOrigin = transform;
+
+        if (firePoint == null)
+            firePoint = transform;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Shoot a projectile 0.2 seconds after the player is detected
-        hit = Physics2D.Raycast(transform.position, Vector2.left, Mathf.Infinity, LayerMask.GetMask("Player"));
-        Debug.DrawRay(transform.position, Vector2.left * 10, Color.red);
-        if (hit.collider != null)
-        {
-            shootDelay -= Time.deltaTime;
-            if (shootDelay <= 0f)
-            {
-                Shoot();
-                shootDelay = 0.2f;
-            }
-        }
+        DetectAndShoot();
     }
 
-    private void Shoot()
+    void DetectAndShoot()
     {
-        GameObject bullet;
-        if (bulletStack.Count > 0)
+        Vector3 direction = raycastOrigin.forward;
+        RaycastHit hit;
+
+        // Perform raycast
+        if (Physics.Raycast(raycastOrigin.position, direction, out hit, detectionRange, playerLayer))
         {
-            bullet = bulletStack.Pop();
-            bullet.SetActive(true);
-            bullet.transform.position = transform.position;
+            // Check if we hit the player
+            if (hit.collider.CompareTag("Player"))
+            {
+                player = hit.collider.transform;
+
+                // Debug ray (green when player detected)
+                if (showDebugRay)
+                    Debug.DrawRay(raycastOrigin.position, direction * hit.distance, Color.green);
+
+                // Shoot at player if cooldown is ready
+                if (Time.time >= nextFireTime)
+                {
+                    ShootAtPlayer();
+                    nextFireTime = Time.time + 1f / fireRate;
+                }
+            }
         }
         else
         {
-            bullet = Instantiate(Bullet, transform.position, Quaternion.identity);
-            bullet.AddComponent<BulletBehaviour>().canon = this;
+            // Debug ray (red when no player detected)
+            if (showDebugRay)
+                Debug.DrawRay(raycastOrigin.position, direction * detectionRange, Color.red);
+
+            player = null;
         }
-        bullet.GetComponent<Rigidbody2D>().linearVelocity = Vector2.left * speed;
+    }
+
+    void ShootAtPlayer()
+    {
+        if (bulletPrefab == null || player == null)
+            return;
+
+        // Instantiate bullet
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        // Calculate direction to player
+        Vector3 shootDirection = (player.position - firePoint.position).normalized;
+
+        // Add velocity to bullet
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = shootDirection * bulletSpeed;
+        }
+
+        // Destroy bullet after 5 seconds
+        Destroy(bullet, 5f);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (raycastOrigin == null)
+            raycastOrigin = transform;
+
+        // Draw detection range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(raycastOrigin.position, raycastOrigin.forward * detectionRange);
     }
 }

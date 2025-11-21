@@ -70,12 +70,15 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // When the player collides with an obstacle get knocked back and a little bit up
     public void Hurt()
     {
+        _inputActions.Player.Disable();
         health -= 1;
+        _rb.linearVelocity = new Vector2(0, 0);
         _ab.GotHurt();
         _rb.linearVelocity = new Vector2(0, 0);
+        _inputActions.Player.Enable();
     }
     public void ResetPlayerAfterDeath()
-    {        
+    {
         _inputActions.Player.Disable();
         if (_rb.gravityScale < 0)
         {
