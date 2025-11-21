@@ -52,6 +52,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         _inputActions.Player.Enable();
         HurtBehaviourScript.OnPlayerHurt += Hurt;
+        BulletBehaviour.OnPlayerHurt += Hurt;
         DoorBehaviourScript.OnPlayerDoor += EnterDoor;
     }
 
@@ -59,6 +60,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         _inputActions.Player.Disable();
         HurtBehaviourScript.OnPlayerHurt -= Hurt;
+        BulletBehaviour.OnPlayerHurt -= Hurt;
         DoorBehaviourScript.OnPlayerDoor -= EnterDoor;
     }
 
@@ -89,13 +91,9 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         _ab.EndHurt();
         _inputActions.Player.Enable();
     }
-    public void EnterDoor(int directionToNextDoor, int exitDirection)
+    public void EnterDoor(DoorBehaviourScript NextDoor, int exitDirection)
     {
-        // Add the direction to the current level
-        GameManager.instance.CurrentLevel += directionToNextDoor;
-        // Set the respawnpoint to a little bit the next door's position
-        RespawnPoint = GameManager.instance.doorsList[GameManager.instance.CurrentLevel].transform.position + new Vector3(2 * exitDirection, 0, 0);
-        // Move the player to the respawn point
+        RespawnPoint = NextDoor.transform.position + new Vector3(1.5f * exitDirection, 0);
         _rb.transform.position = RespawnPoint;
     }
 }

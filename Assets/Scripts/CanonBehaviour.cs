@@ -1,115 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class CanonBehaviour : MonoBehaviour
 {
-<<<<<<< HEAD
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    //Detects player with a Raycast2D and shoots them
+    public float detectionRange = 5f;
+    private Stopwatch Stopwatch = new Stopwatch();
+    public Transform shootPoint;
+    public GameObject bullet;
+    public Stack<GameObject> bulletsPool = new Stack<GameObject>();
+    private void Start()
     {
-        
+        Stopwatch.Start();
     }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
-=======
-    [Header("Detection Settings")]
-    public float detectionRange = 10f;
-    public LayerMask playerLayer;
-    public Transform raycastOrigin;
-
-    [Header("Shooting Settings")]
-    public GameObject bulletPrefab;
-    public Transform firePoint;
-    public float fireRate = 1f;
-    public float bulletSpeed = 20f;
-
-    [Header("Debug")]
-    public bool showDebugRay = true;
-
-    private float nextFireTime = 0f;
-    private Transform player;
-
-    void Enable()
-    {
-        if (raycastOrigin == null)
-            raycastOrigin = transform;
-
-        if (firePoint == null)
-            firePoint = transform;
-    }
-
-    void Update()
-    {
-        DetectAndShoot();
-    }
-
-    void DetectAndShoot()
-    {
-        Vector3 direction = raycastOrigin.forward;
-        RaycastHit hit;
-
-        // Perform raycast
-        if (Physics.Raycast(raycastOrigin.position, direction, out hit, detectionRange, playerLayer))
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.right, detectionRange);
+        UnityEngine.Debug.DrawRay(transform.position, transform.right * detectionRange, Color.red);
+        if (hit.collider != null && hit.collider.gameObject.layer == 6 && Stopwatch.ElapsedMilliseconds >= 500)
         {
-            // Check if we hit the player
-            if (hit.collider.CompareTag("Player"))
-            {
-                player = hit.collider.transform;
-
-                // Debug ray (green when player detected)
-                if (showDebugRay)
-                    Debug.DrawRay(raycastOrigin.position, direction * hit.distance, Color.green);
-
-                // Shoot at player if cooldown is ready
-                if (Time.time >= nextFireTime)
-                {
-                    ShootAtPlayer();
-                    nextFireTime = Time.time + 1f / fireRate;
-                }
-            }
+            UnityEngine.Debug.Log("Raycast hit: " + hit.collider.gameObject.name);
+            //Debug.Log("Player detected by canon!");
+            Stopwatch.Restart();
+            Shoot();
+            UnityEngine.Debug.Log("Canon shot a bullet!");
+        }
+    }
+    private void Shoot()
+    {
+        BulletBehaviour bb;
+        if(bulletsPool.Count > 0)
+        {
+            bb = bulletsPool.Pop().GetComponent<BulletBehaviour>();
+            bb.transform.position = shootPoint.position;
+            bb.gameObject.SetActive(true);
         }
         else
         {
-            // Debug ray (red when no player detected)
-            if (showDebugRay)
-                Debug.DrawRay(raycastOrigin.position, direction * detectionRange, Color.red);
-
-            player = null;
+            bb = Instantiate(bullet, shootPoint.position, Quaternion.identity).GetComponent<BulletBehaviour>();
         }
     }
-
-    void ShootAtPlayer()
+    public void ReturnBulletToPool(GameObject bullet)
     {
-        if (bulletPrefab == null || player == null)
-            return;
-
-        // Instantiate bullet
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-
-        // Calculate direction to player
-        Vector3 shootDirection = (player.position - firePoint.position).normalized;
-
-        // Add velocity to bullet
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.linearVelocity = shootDirection * bulletSpeed;
-        }
-
-        // Destroy bullet after 5 seconds
-        Destroy(bullet, 5f);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (raycastOrigin == null)
-            raycastOrigin = transform;
-
-        // Draw detection range
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(raycastOrigin.position, raycastOrigin.forward * detectionRange);
->>>>>>> origin/Dev
+        bulletsPool.Push(bullet);
+        bullet.SetActive(false);
     }
 }

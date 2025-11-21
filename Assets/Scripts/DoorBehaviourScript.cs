@@ -8,12 +8,12 @@ public class DoorBehaviourScript : MonoBehaviour
 {
     private Rigidbody rb;
     private Player player;
-    public static event Action<int, int> OnPlayerDoor;
-    public int directionToNextDoor;
+    public static event Action<DoorBehaviourScript, int> OnPlayerDoor;
+    public DoorBehaviourScript nextDoor;
     public int exitDirection;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        OnPlayerDoor?.Invoke(directionToNextDoor, exitDirection);
+        OnPlayerDoor?.Invoke(nextDoor, exitDirection);
     }
 }
