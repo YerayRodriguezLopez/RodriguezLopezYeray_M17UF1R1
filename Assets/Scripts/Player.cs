@@ -20,15 +20,25 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public Animator Animator;
     public Vector2 RespawnPoint;
 
+    [Header("Invincibility")]
+    [SerializeField] private float invincibilityDuration = 1.5f;
+    [SerializeField] private float flashInterval = 0.1f; // How fast player flashes
+    private float invincibilityTimer = 0f;
+    private bool isInvincible = false;
+    private SpriteRenderer spriteRenderer;
+
     [Header("Death Settings")]
     [SerializeField] private string gameOverSceneName = "GameOver"; // Scene to load on death
-    [SerializeField] private float deathDelay = 2f; // Delay before loading game over scene
+    [SerializeField] private float deathDelay = 1.5f; // Delay before loading game over scene (should be at least as long as death sound)
 
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             _jb.Jump();
+            // Play jump sound
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayJumpSound();
         }
     }
 
@@ -54,6 +64,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         _inputActions = new InputSystem_Actions();
         _inputActions.Player.SetCallbacks(this);
         Animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         RespawnPoint = transform.position;
 
         // Find UIManager in the scene
@@ -94,14 +105,51 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     void Update()
     {
         _mb.Move(_dir);
+
+        // Handle invincibility timer
+        if (isInvincible)
+        {
+            invincibilityTimer -= Time.deltaTime;
+
+            // Flash sprite
+            if (spriteRenderer != null)
+            {
+                float flash = Mathf.PingPong(Time.time / flashInterval, 1f);
+                spriteRenderer.enabled = flash > 0.5f;
+            }
+
+            if (invincibilityTimer <= 0)
+            {
+                isInvincible = false;
+                // Make sure sprite is visible again
+                if (spriteRenderer != null)
+                    spriteRenderer.enabled = true;
+            }
+        }
     }
 
     public void Hurt()
     {
-        if (health <= 0) return; // Already dead
+        // Check if player is invincible or already dead
+        if (isInvincible || health <= 0) return;
 
         _inputActions.Player.Disable();
         health -= 1;
+
+        // Play hurt sound FIRST before any animation
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayHurtSound();
+            UnityEngine.Debug.Log("Playing hurt sound");
+        }
+        else
+        {
+            UnityEngine.Debug.LogWarning("AudioManager not found!");
+        }
+
+        // Activate invincibility
+        isInvincible = true;
+        invincibilityTimer = invincibilityDuration;
 
         // Update UI
         if (_uiManager != null)
@@ -129,6 +177,14 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         // Disable player input
         _inputActions.Player.Disable();
 
+        // Stop all movement
+        _rb.linearVelocity = Vector2.zero;
+        _rb.angularVelocity = 0f;
+
+        // Play death sound
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayDeathSound();
+
         // Optional: Play death animation
         if (_ab != null)
         {
@@ -149,13 +205,25 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public void ResetPlayerAfterDeath()
     {
         _inputActions.Player.Disable();
+
+        // Reset velocity to zero
+        _rb.linearVelocity = Vector2.zero;
+        _rb.angularVelocity = 0f;
+
         if (_rb.gravityScale < 0)
         {
             _rb.gravityScale *= -1f;
             transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
         }
+
         _rb.transform.position = RespawnPoint;
         _ab.EndHurt();
+
+        // Reset invincibility and make sprite visible
+        isInvincible = false;
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = true;
+
         _inputActions.Player.Enable();
     }
 
