@@ -46,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -60,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -125,19 +125,19 @@ TextureImporter:
       name: MouseDamage_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 108
-        width: 18
-        height: 11
+        x: 0
+        y: 96
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0f1d0183ed7b92250800000000000000
+      spriteID: 8cbbec7b71ce7144b81551506fa6b498
       internalID: 5920465350206476784
       vertices: []
       indices: 
@@ -147,19 +147,19 @@ TextureImporter:
       name: MouseDamage_1
       rect:
         serializedVersion: 2
-        x: 7
-        y: 76
-        width: 17
-        height: 12
+        x: 0
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd43bac0f49f31e70800000000000000
+      spriteID: 6758abc8e00b7a447ae5ce9536799ae1
       internalID: 9084878991246701787
       vertices: []
       indices: 
@@ -169,19 +169,19 @@ TextureImporter:
       name: MouseDamage_2
       rect:
         serializedVersion: 2
-        x: 7
-        y: 44
-        width: 17
-        height: 12
+        x: 0
+        y: 32
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7d335b8a9f247c7b0800000000000000
+      spriteID: 7fcadf8bf4ac1d145ac67de45fe740d3
       internalID: -5204117204358581289
       vertices: []
       indices: 
@@ -191,19 +191,19 @@ TextureImporter:
       name: MouseDamage_3
       rect:
         serializedVersion: 2
-        x: 7
-        y: 12
-        width: 17
-        height: 12
+        x: 0
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 60bb5660e7e061d80800000000000000
+      spriteID: d16ed340d4cd55c44a9ca685a870fcf3
       internalID: -8280414930438079738
       vertices: []
       indices: 
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0b058edfd7c220c41b6dd21acf37ce39
     internalID: 0
     vertices: []
     indices: 
@@ -221,7 +221,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":4.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       MouseDamage_0: 5920465350206476784
       MouseDamage_1: 9084878991246701787
